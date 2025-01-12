@@ -77,22 +77,47 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function updateTemperatureDisplay() {
         const unit = localStorage.getItem('tempUnit') || 'celsius';
+        const tempUnit = document.querySelectorAll('.temperature-unit');
         
-        if (originalFeelsLike !== null && originalActualTemp !== null) {
-            if (unit === 'fahrenheit') {
-                feelsLikeElement.textContent = Math.round(celsiusToFahrenheit(originalFeelsLike));
-                actualTempElement.textContent = Math.round(celsiusToFahrenheit(originalActualTemp));
-                document.querySelectorAll('.temperature-unit').forEach(el => {
-                    el.textContent = '°F';
-                });
-            } else {
-                feelsLikeElement.textContent = originalFeelsLike;
-                actualTempElement.textContent = originalActualTemp;
-                document.querySelectorAll('.temperature-unit').forEach(el => {
-                    el.textContent = '°C';
-                });
-            }
+        // Update main temperatures
+        if (unit === 'fahrenheit') {
+            feelsLikeElement.textContent = Math.round(celsiusToFahrenheit(originalFeelsLike));
+            actualTempElement.textContent = Math.round(celsiusToFahrenheit(originalActualTemp));
+            tempUnit.forEach(el => el.textContent = '°F');
+        } else {
+            feelsLikeElement.textContent = Math.round(originalFeelsLike);
+            actualTempElement.textContent = Math.round(originalActualTemp);
+            tempUnit.forEach(el => el.textContent = '°C');
         }
+
+        // Update hourly forecast
+        const hourlyForecasts = document.querySelectorAll('.hourly-forecast-item');
+        hourlyForecasts.forEach(item => {
+            const tempElement = item.querySelector('.forecast-temp');
+            const originalTemp = parseFloat(tempElement.dataset.temp);
+            if (unit === 'fahrenheit') {
+                tempElement.textContent = `${Math.round(celsiusToFahrenheit(originalTemp))}°F`;
+            } else {
+                tempElement.textContent = `${Math.round(originalTemp)}°C`;
+            }
+        });
+
+        // Update daily forecast
+        const dailyForecasts = document.querySelectorAll('.daily-forecast-item');
+        dailyForecasts.forEach(item => {
+            const maxTempElement = item.querySelector('.forecast-temp-max');
+            const minTempElement = item.querySelector('.forecast-temp-min');
+            const originalMaxTemp = parseFloat(maxTempElement.dataset.temp);
+            const originalMinTemp = parseFloat(minTempElement.dataset.temp);
+            
+            if (unit === 'fahrenheit') {
+                maxTempElement.textContent = `${Math.round(celsiusToFahrenheit(originalMaxTemp))}°F`;
+                minTempElement.textContent = `${Math.round(celsiusToFahrenheit(originalMinTemp))}°F`;
+            } else {
+                maxTempElement.textContent = `${Math.round(originalMaxTemp)}°C`;
+                minTempElement.textContent = `${Math.round(originalMinTemp)}°C`;
+            }
+        });
     }
 
     function saveSettings() {
@@ -713,7 +738,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (results.length > 0) {
             results.forEach(result => {
                 const resultItem = document.createElement('div');
-                resultItem.className = 'search-result-item';
+                resultItem.className = 'search-result-item d-flex justify-content-between align-items-center';
                 
                 let locationDetail = '';
                 if (result.state) {
@@ -725,12 +750,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 const isPinned = pins.some(pin => pin.lat === result.lat.toString() && pin.lon === result.lon.toString());
                 
                 resultItem.innerHTML = `
-                    <div>
-                        <i class="fas fa-map-marker-alt"></i>
-                        <div class="location-name">${result.name}</div>
-                        <div class="location-detail">${locationDetail}</div>
+                    <div class="d-flex align-items-center flex-grow-1">
+                        <i class="fas fa-map-marker-alt me-2"></i>
+                        <div class="location-info">
+                            <div class="location-name text-truncate">${result.name}</div>
+                            <div class="location-detail text-truncate">${locationDetail}</div>
+                        </div>
                     </div>
-                    <button class="pin-button ${isPinned ? 'pinned' : ''}" title="${isPinned ? 'Unpin location' : 'Pin location'}">
+                    <button class="pin-button ms-2 ${isPinned ? 'pinned' : ''}" title="${isPinned ? 'Unpin location' : 'Pin location'}">
                         <i class="fas fa-thumbtack"></i>
                     </button>
                 `;
@@ -979,12 +1006,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
         noPins.style.display = 'none';
         pinnedLocations.innerHTML = pins.map(pin => `
-            <div class="pinned-location" data-lat="${pin.lat}" data-lon="${pin.lon}">
-                <div class="pinned-location-info">
-                    <div class="pinned-location-name">${pin.name}</div>
-                    <div class="pinned-location-detail">${pin.detail}</div>
+            <div class="pinned-location d-flex justify-content-between align-items-center" data-lat="${pin.lat}" data-lon="${pin.lon}">
+                <div class="pinned-location-info flex-grow-1">
+                    <div class="pinned-location-name text-truncate">${pin.name}</div>
+                    <div class="pinned-location-detail text-truncate">${pin.detail}</div>
                 </div>
-                <button class="unpin-button" data-lat="${pin.lat}" data-lon="${pin.lon}">
+                <button class="unpin-button ms-2" data-lat="${pin.lat}" data-lon="${pin.lon}">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
@@ -1069,4 +1096,71 @@ document.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => toast.remove(), 300);
         }, 3000);
     }
+
+    // Add responsive handling for panels
+    function handleResponsivePanels() {
+        const isMobile = window.innerWidth < 768;
+        
+        if (isMobile) {
+            // Make panels full width on mobile
+            document.querySelectorAll('.settings-panel, .pins-panel').forEach(panel => {
+                panel.style.width = '100%';
+                panel.style.right = '-100%';
+            });
+            
+            // Adjust search results position
+            searchResults.style.width = '100%';
+            searchResults.style.left = '0';
+        } else {
+            // Reset to default on desktop
+            document.querySelectorAll('.settings-panel, .pins-panel').forEach(panel => {
+                panel.style.width = '320px';
+                panel.style.right = '-320px';
+            });
+            
+            // Reset search results
+            searchResults.style.width = '';
+            searchResults.style.left = '';
+        }
+    }
+
+    // Add resize listener for responsive handling
+    window.addEventListener('resize', handleResponsivePanels);
+
+    // Initialize responsive handling
+    document.addEventListener('DOMContentLoaded', () => {
+        // ... existing initialization code ...
+        
+        handleResponsivePanels();
+        
+        // Add touch event handling for mobile
+        let touchStartX = 0;
+        let touchEndX = 0;
+        
+        document.addEventListener('touchstart', e => {
+            touchStartX = e.changedTouches[0].screenX;
+        }, false);
+        
+        document.addEventListener('touchend', e => {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        }, false);
+        
+        function handleSwipe() {
+            const swipeDistance = touchEndX - touchStartX;
+            const threshold = 100; // minimum distance for swipe
+            
+            if (Math.abs(swipeDistance) < threshold) return;
+            
+            if (settingsPanel.classList.contains('active') && swipeDistance > 0) {
+                settingsPanel.classList.remove('active');
+                settingsOverlay.classList.remove('active');
+            }
+            
+            if (pinsPanel.classList.contains('active') && swipeDistance > 0) {
+                pinsPanel.classList.remove('active');
+                pinsOverlay.classList.remove('active');
+            }
+        }
+    });
 });

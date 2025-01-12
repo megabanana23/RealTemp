@@ -21,33 +21,39 @@
     <!-- Navigation -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container">
-            <a class="navbar-brand" href="#">
-                <i class="fas fa-temperature-high"></i> Real Temp
-            </a>
-            
-            <div class="nav-controls">
-                <div class="search-section">
-                    <div class="search-container">
-                        <div class="search-wrapper">
-                            <input type="text" id="searchInput" class="search-input" placeholder="Search location...">
-                            <button id="searchButton" class="search-button">
-                                <i class="fas fa-search"></i>
-                            </button>
-                            <button id="currentLocationButton" class="location-button" title="Use current location">
-                                <i class="fas fa-location-crosshairs"></i>
-                            </button>
-                        </div>
-                        <div id="searchResults" class="search-results"></div>
+            <div class="navbar-wrapper w-100">
+                <div class="navbar-row">
+                    <a class="navbar-brand" href="#">
+                        <i class="fas fa-temperature-high"></i> Real Temp
+                    </a>
+                    
+                    <div class="nav-buttons">
+                        <button class="nav-link pins-toggle" id="pinsToggle" title="Pinned Locations">
+                            <i class="fas fa-thumbtack"></i>
+                        </button>
+                        <button class="nav-link settings-toggle" id="settingsToggle">
+                            <i class="fas fa-bars"></i>
+                        </button>
                     </div>
                 </div>
-
-                <div class="nav-buttons">
-                    <button class="nav-link pins-toggle" id="pinsToggle" title="Pinned Locations">
-                        <i class="fas fa-thumbtack"></i>
-                    </button>
-                    <button class="nav-link settings-toggle" id="settingsToggle">
-                        <i class="fas fa-bars"></i>
-                    </button>
+                
+                <div class="navbar-row">
+                    <div class="search-section">
+                        <div class="search-container">
+                            <div class="search-wrapper">
+                                <input type="text" id="searchInput" class="search-input" placeholder="Search location...">
+                                <div class="search-buttons">
+                                    <button id="searchButton" class="search-button">
+                                        <i class="fas fa-search"></i>
+                                    </button>
+                                    <button id="currentLocationButton" class="location-button" title="Use current location">
+                                        <i class="fas fa-location-crosshairs"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div id="searchResults" class="search-results"></div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

@@ -24,7 +24,76 @@ body {
 .navbar {
     background: var(--card-bg) !important;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    padding: 1rem 0;
+    padding: 0.75rem 0;
+}
+
+.navbar .container {
+    padding: 0 1rem;
+}
+
+.navbar-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    width: 100%;
+}
+
+.navbar-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.navbar-row:last-child {
+    justify-content: center;
+}
+
+.search-section {
+    width: 100%;
+    max-width: 500px;
+}
+
+.search-container {
+    width: 100%;
+}
+
+.search-wrapper {
+    position: relative;
+    width: 100%;
+    display: flex;
+    align-items: center;
+}
+
+.search-input {
+    width: 100%;
+    padding: 0.5rem 5rem 0.5rem 1rem;
+    border-radius: 8px;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    background-color: var(--background);
+    color: var(--text-primary);
+}
+
+.search-buttons {
+    position: absolute;
+    right: 0;
+    display: flex;
+    gap: 0.25rem;
+    padding-right: 0.5rem;
+}
+
+.nav-buttons {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.search-button, .location-button {
+    background: none;
+    border: none;
+    padding: 0.5rem;
+    color: var(--text-secondary);
+    cursor: pointer;
 }
 
 .navbar-brand {
@@ -1142,7 +1211,7 @@ html {
     flex-grow: 1;
     justify-content: center;
     position: relative;
-    margin: 0 2rem;
+    margin: 0 1rem;
 }
 
 .search-section {
@@ -1150,40 +1219,130 @@ html {
     max-width: 500px;
     display: flex;
     justify-content: center;
+    position: relative;
+}
+
+.search-container {
+    width: 100%;
+}
+
+.search-wrapper {
+    display: flex;
+    align-items: center;
+    position: relative;
+}
+
+.search-input {
+    width: 100%;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    background-color: var(--background);
+    color: var(--text-primary);
+}
+
+.search-buttons {
+    display: flex;
+    position: absolute;
+    right: 0;
+    height: 100%;
+}
+
+.search-button, .location-button {
+    background: none;
+    border: none;
+    padding: 0.5rem;
+    color: var(--text-secondary);
+    cursor: pointer;
+    height: 100%;
+    display: flex;
+    align-items: center;
 }
 
 .nav-buttons {
-    position: absolute;
-    right: 0;
     display: flex;
     align-items: center;
     gap: 0.5rem;
+    margin-left: 1rem;
 }
 
-/* Update search container width */
-.search-container {
-    width: 100%;
-    max-width: 500px;
-}
+/* Mobile responsive styles */
+@media (max-width: 768px) {
+    .navbar {
+        padding: 0.5rem 0;
+    }
 
-/* Update navbar container */
-.navbar .container {
-    position: relative;
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-}
+    .navbar .container {
+        padding: 0 1rem;
+    }
 
-/* Ensure buttons have consistent styling */
-.pins-toggle, .settings-toggle {
-    background: none;
-    border: none;
-    color: var(--text-secondary);
-    padding: 0.5rem;
-    cursor: pointer;
-    transition: color 0.2s ease;
-}
+    .navbar-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+        margin-bottom: 0.75rem;
+    }
 
-.pins-toggle:hover, .settings-toggle:hover {
-    color: var(--brand-primary);
+    .nav-buttons {
+        display: flex;
+        gap: 0.75rem;
+        margin-left: 0;
+    }
+
+    .navbar-bottom {
+        width: 100%;
+    }
+
+    .search-wrapper {
+        display: flex;
+        align-items: center;
+        position: relative;
+        width: 100%;
+    }
+
+    .search-input {
+        width: 100%;
+        padding-right: 5rem; /* Make room for the buttons */
+        font-size: 16px;
+    }
+
+    .search-buttons {
+        position: absolute;
+        right: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        display: flex;
+        gap: 0.25rem;
+        padding-right: 0.25rem;
+    }
+
+    .search-button, 
+    .location-button {
+        padding: 0.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    /* Make panels full width on mobile */
+    .settings-panel,
+    .pins-panel {
+        width: 100%;
+        right: -100%;
+    }
+
+    .settings-panel.active,
+    .pins-panel.active {
+        right: 0;
+    }
+
+    /* Adjust search results */
+    .search-results {
+        position: absolute;
+        width: 100%;
+        left: 0;
+        top: 100%;
+        z-index: 1000;
+    }
 }
