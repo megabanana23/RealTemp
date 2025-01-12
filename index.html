@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real Temp - Feel the Difference</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <link href="realtemp.css" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- Inter Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-temperature-high"></i> Real Temp
+            </a>
+            
+            <div class="nav-controls">
+                <div class="search-section">
+                    <div class="search-container">
+                        <div class="search-wrapper">
+                            <input type="text" id="searchInput" class="search-input" placeholder="Search location...">
+                            <button id="searchButton" class="search-button">
+                                <i class="fas fa-search"></i>
+                            </button>
+                            <button id="currentLocationButton" class="location-button" title="Use current location">
+                                <i class="fas fa-location-crosshairs"></i>
+                            </button>
+                        </div>
+                        <div id="searchResults" class="search-results"></div>
+                    </div>
+                </div>
+
+                <div class="nav-buttons">
+                    <button class="nav-link pins-toggle" id="pinsToggle" title="Pinned Locations">
+                        <i class="fas fa-thumbtack"></i>
+                    </button>
+                    <button class="nav-link settings-toggle" id="settingsToggle">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="weather-card text-center">
+                    <div id="location-info">
+                        <h2 id="city">Locating...</h2>
+                        <p id="date"></p>
+                    </div>
+                    
+                    <div id="loading" class="mt-4">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+
+                    <div id="weather-info" class="mt-4" style="display: none;">
+                        <!-- Main Temperature Display -->
+                        <div class="main-temperature">
+                            <div class="main-temp-content">
+                                <h2>Feels Like</h2>
+                                <div class="temperature-display">
+                                    <span id="feels-like">--</span><span class="temperature-unit">°C</span>
+                                </div>
+                                <p id="condition" class="condition-text">--</p>
+                            </div>
+                        </div>
+
+                        <!-- Tile Grid -->
+                        <div class="tile-container">
+                            <!-- First Row -->
+                            <div class="tile" data-bs-toggle="modal" data-bs-target="#actualTempModal">
+                                <div class="tile-content">
+                                    <i class="fas fa-thermometer-half tile-icon"></i>
+                                    <h3>Actual Temperature</h3>
+                                    <p><span id="actual-temp">--</span><span class="temperature-unit">°C</span></p>
+                                </div>
+                            </div>
+
+                            <div class="tile" data-bs-toggle="modal" data-bs-target="#humidityModal">
+                                <div class="tile-content">
+                                    <i class="fas fa-water tile-icon"></i>
+                                    <h3>Humidity</h3>
+                                    <p id="humidity"></p>
+                                </div>
+                            </div>
+
+                            <!-- Second Row -->
+                            <div class="tile" data-bs-toggle="modal" data-bs-target="#windModal">
+                                <div class="tile-content">
+                                    <i class="fas fa-wind tile-icon"></i>
+                                    <h3>Wind Speed</h3>
+                                    <p id="wind"></p>
+                                </div>
+                            </div>
+
+                            <div class="tile" data-bs-toggle="modal" data-bs-target="#airQualityModal">
+                                <div class="tile-content">
+                                    <i class="fas fa-lungs tile-icon"></i>
+                                    <h3>Air Quality</h3>
+                                    <p><span id="air-quality">--</span></p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="forecast-container mt-4">
+                            <div class="forecast-tile" data-bs-toggle="modal" data-bs-target="#forecastModal">
+                                <h3>24-Hour Forecast</h3>
+                                <div class="hourly-forecast" id="hourlyForecast">
+                                    <!-- Hourly forecasts will be inserted here by JavaScript -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="forecast-container mt-4">
+                            <div class="forecast-tile" data-bs-toggle="modal" data-bs-target="#tenDayForecastModal">
+                                <h3>5-Day Forecast</h3>
+                                <div class="daily-forecast" id="dailyForecast">
+                                    <!-- Daily forecasts will be inserted here by JavaScript -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer mt-5">
+        <div class="container text-center">
+            <p>&copy; 2024 Real Temp. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+    <script src="script.js"></script>
+
+    <!-- Settings Modal -->
+    <div class="settings-overlay" id="settingsOverlay"></div>
+    <div class="settings-panel" id="settingsPanel">
+        <div class="settings-header">
+            <h5><i class="fas fa-cog"></i> Settings</h5>
+            <button class="close-settings" id="closeSettings">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="settings-content">
+            <div class="settings-section">
+                <div class="settings-section-header">
+                    <i class="fas fa-thermometer-half"></i>
+                    <h6>Temperature Unit</h6>
+                </div>
+                <div class="settings-options">
+                    <div class="setting-option">
+                        <input class="form-check-input" type="radio" name="tempUnit" id="celsius" value="celsius">
+                        <label class="form-check-label" for="celsius">
+                            Celsius (°C)
+                        </label>
+                    </div>
+                    <div class="setting-option">
+                        <input class="form-check-input" type="radio" name="tempUnit" id="fahrenheit" value="fahrenheit">
+                        <label class="form-check-label" for="fahrenheit">
+                            Fahrenheit (°F)
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="settings-divider"></div>
+
+            <div class="settings-section">
+                <div class="settings-section-header">
+                    <i class="fas fa-wind"></i>
+                    <h6>Speed Unit</h6>
+                </div>
+                <div class="settings-options">
+                    <div class="setting-option">
+                        <input class="form-check-input" type="radio" name="speedUnit" id="kilometers" value="kilometers">
+                        <label class="form-check-label" for="kilometers">
+                            Kilometers per hour (km/h)
+                        </label>
+                    </div>
+                    <div class="setting-option">
+                        <input class="form-check-input" type="radio" name="speedUnit" id="miles" value="miles">
+                        <label class="form-check-label" for="miles">
+                            Miles per hour (mph)
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="settings-divider"></div>
+
+            <div class="settings-section">
+                <div class="settings-section-header">
+                    <i class="fas fa-palette"></i>
+                    <h6>Theme</h6>
+                </div>
+                <div class="settings-options">
+                    <div class="setting-option">
+                        <input class="form-check-input" type="radio" name="theme" id="lightMode" value="light">
+                        <label class="form-check-label" for="lightMode">
+                            <i class="fas fa-sun"></i> Light Mode
+                        </label>
+                    </div>
+                    <div class="setting-option">
+                        <input class="form-check-input" type="radio" name="theme" id="darkMode" value="dark">
+                        <label class="form-check-label" for="darkMode">
+                            <i class="fas fa-moon"></i> Dark Mode
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Temperature Modal -->
+    <div class="modal fade" id="tempModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Feels Like Temperature</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>The "feels like" temperature takes into account wind chill and humidity to give you a better idea of how the weather will actually feel on your skin.</p>
+                    <div class="text-center">
+                        <h2><span id="modal-feels-like">--</span><span class="temperature-unit">°C</span></h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add similar modals for other tiles -->
+
+    <!-- Add this new modal for air quality -->
+    <div class="modal fade" id="airQualityModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Air Quality Index</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Air Quality Index (AQI) indicates how clean or polluted the air is:</p>
+                    <ul class="aqi-list">
+                        <li class="aqi-good">1: Good</li>
+                        <li class="aqi-fair">2: Fair</li>
+                        <li class="aqi-moderate">3: Moderate</li>
+                        <li class="aqi-poor">4: Poor</li>
+                        <li class="aqi-very-poor">5: Very Poor</li>
+                    </ul>
+                    <div class="text-center mt-3">
+                        <h3>Current AQI: <span id="modal-air-quality">--</span></h3>
+                        <p id="aqi-description">--</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Actual Temperature Modal -->
+    <div class="modal fade" id="actualTempModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Actual Temperature</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>The actual temperature is the direct measurement from our weather sensors, without accounting for human perception factors like wind chill or humidity.</p>
+                    <div class="text-center mt-3">
+                        <h2><span id="modal-actual-temp">--</span><span class="temperature-unit">°C</span></h2>
+                    </div>
+                    <div class="mt-3">
+                        <h5>What this means:</h5>
+                        <ul>
+                            <li>This is the raw temperature reading</li>
+                            <li>Useful for comparing historical temperatures</li>
+                            <li>Important for weather forecasting</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Humidity Modal -->
+    <div class="modal fade" id="humidityModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Humidity Information</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="current-humidity">
+                        <h4>Current Humidity Level</h4>
+                        <div id="modal-humidity" class="current-humidity-level"></div>
+                    </div>
+                    <div class="humidity-scale mt-4">
+                        <h5>Humidity Scale:</h5>
+                        <ul class="humidity-categories">
+                            <li class="humidity-category">0-30%: Very Dry - May cause skin irritation</li>
+                            <li class="humidity-category">30-50%: Comfortable - Ideal indoor levels</li>
+                            <li class="humidity-category">50-70%: Moderate - Common outdoors</li>
+                            <li class="humidity-category">70-100%: High - Can feel muggy</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Wind Speed Modal -->
+    <div class="modal fade" id="windModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Wind Information</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="current-wind">
+                        <h4>Current Wind Speed</h4>
+                        <div id="modal-wind" class="current-wind-speed"></div>
+                    </div>
+                    <div class="wind-scale mt-4">
+                        <h5>Wind Speed Scale:</h5>
+                        <ul class="wind-categories">
+                            <li class="wind-category">0-1 km/h: Calm - Smoke rises vertically</li>
+                            <li class="wind-category">2-5 km/h: Light Air - Smoke drifts</li>
+                            <li class="wind-category">6-11 km/h: Light Breeze - Leaves rustle</li>
+                            <li class="wind-category">12-19 km/h: Gentle Breeze - Leaves in motion</li>
+                            <li class="wind-category">20-28 km/h: Moderate Breeze - Small branches move</li>
+                            <li class="wind-category">29-38 km/h: Fresh Breeze - Small trees sway</li>
+                            <li class="wind-category">39-49 km/h: Strong Breeze - Large branches move</li>
+                            <li class="wind-category">50-61 km/h: High Wind - Whole trees in motion</li>
+                            <li class="wind-category">62-74 km/h: Gale - Walking is difficult</li>
+                            <li class="wind-category">75-88 km/h: Strong Gale - Structural damage</li>
+                            <li class="wind-category">>89 km/h: Storm - Severe damage possible</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Forecast Modal -->
+    <div class="modal fade" id="forecastModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Detailed 24-Hour Forecast</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="detailed-forecast" id="detailedForecast">
+                        <!-- Detailed forecast will be inserted here by JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add this new modal for 10-day forecast -->
+    <div class="modal fade" id="tenDayForecastModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">5-Day Detailed Forecast</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="detailed-daily-forecast" id="detailedDailyForecast">
+                        <!-- Detailed daily forecast will be inserted here by JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add this new panel for pinned locations -->
+    <div class="pins-overlay" id="pinsOverlay"></div>
+    <div class="pins-panel" id="pinsPanel">
+        <div class="pins-header">
+            <h5><i class="fas fa-thumbtack"></i> Pinned Locations</h5>
+            <button class="close-pins" id="closePins">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="pins-content">
+            <div id="pinnedLocations" class="pinned-locations">
+                <!-- Pinned locations will be inserted here -->
+            </div>
+            <div class="no-pins" id="noPins">
+                <p>No pinned locations yet</p>
+                <small>Search for a location and click the pin icon to save it</small>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
